@@ -1,0 +1,41 @@
+inherit_gem:
+  rubocop-shopify: rubocop.yml
+
+require:
+  - rubocop-performance
+
+AllCops:
+  TargetRubyVersion: 2.7
+  NewCops: enable
+# Metrics/BlockLength:
+#   Exclude:
+#     - "**/*_spec.rb"
+#     - "**/spec/**/*.rb"
+
+# Metrics/AbcSize:
+#   Max: 18
+#   Exclude:
+#     - "**/*_spec.rb"
+#     - "**/spec/**/*.rb"
+
+# Metrics/ModuleLength:
+#   Exclude:
+#     - "**/*_spec.rb"
+#     - "**/spec/**/*.rb"
+
+# RSpec/MultipleExpectations:
+#   Exclude:
+#     - "**/requests/**/*_spec.rb"
+
+# RSpec/AnyInstance:
+#   Exclude:
+#     - spec/support/**.rb
+
+# Style/AccessorGrouping:
+#   EnforcedStyle: separated
+
+# Style/SymbolArray:
+#   EnforcedStyle: brackets
+
+# Style/AccessModifierDeclarations:
+#   EnforcedStyle: inline

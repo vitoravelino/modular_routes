@@ -1,0 +1,14 @@
+inherit_from: ../.rubocop.yml
+
+Style/MethodCallWithArgsParentheses:
+  Enabled: true
+  IgnoredMethods:
+    - require
+    - require_relative
+    - require_dependency
+    - yield
+    - raise
+    - puts
+    - describe
+    - to
+    - not_to
