@@ -4,12 +4,12 @@ DEFAULT_ACTIONS = [:index, :create, :edit, :new, :show, :update, :destroy].freez
 DEFAULT_API_ACTIONS = [:index, :create, :show, :update, :destroy].freeze
 
 RSpec.describe ModularRoutes::Builder do
-  subject(:builder) { described_class.new(scope_options) }
+  subject(:builder) { described_class.new(route_options) }
 
-  let(:scope_options) { ModularRoutes::ScopeOptions.new(resources: resource_name, **options) }
+  let(:route_options) { ModularRoutes::Options.new(resources: resource_name, **options) }
   let(:resource_name) { :items }
   let(:resource_method) { :resources }
-  let(:options) { Hash[] }
+  let(:options) { Hash[all: true] }
 
   it "generates resource routes by default" do
     expect(builder.routes.first).to be_a(ModularRoutes::Route::Resource)
@@ -39,7 +39,7 @@ RSpec.describe ModularRoutes::Builder do
 
   describe "#get" do
     it "builds inner route" do
-      builder.get(:sent)
+      builder.get(:sent, on: :member)
       inner_route = builder.routes.first
 
       expect(inner_route.http_method).to eq(:get)

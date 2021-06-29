@@ -1,19 +1,22 @@
 # frozen_string_literal: true
 
 module ModularRoutes
-  class ScopeOptions
+  class Options
     attr_reader :method
     attr_reader :module
+    attr_reader :resource
     attr_reader :options
 
     def initialize(options)
       @options = options
       @method = extract_resource_method
-      @module = options.delete(@method)
-      @api = options.delete(:api_only) { false }
+      @resource = @options.delete(@method)
+      @module = @options.fetch(:module, @resource)
+      @api = @options.delete(:api_only) { false }
 
-      @only = options.delete(:only) { default_actions }
-      @except = options.delete(:except)
+      @only = @options.delete(:only)
+      @except = @options.delete(:except)
+      @all = @options.delete(:all)
     end
 
     def singular?
@@ -21,7 +24,11 @@ module ModularRoutes
     end
 
     def actions
-      Array(@only) - Array(@except)
+      return default_actions if @all
+
+      return default_actions - Array(@except) if @except
+
+      Array(@only)
     end
 
     private def default_actions

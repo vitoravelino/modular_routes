@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe ModularRoutes::Route::Resource do
-  subject(:resource_route) { described_class.new(scope_options, action) }
+  subject(:resource_route) { described_class.new(route_options, action) }
 
   let(:resource_name) { :items }
   let(:action) { :create }
   let(:options) { Hash[path: "other_path"] }
 
-  let(:scope_options) { ModularRoutes::ScopeOptions.new(resources: resource_name, only: [action], **options) }
+  let(:route_options) { ModularRoutes::Options.new(resources: resource_name, only: [action], **options) }
 
   let(:resource_options) do
     {

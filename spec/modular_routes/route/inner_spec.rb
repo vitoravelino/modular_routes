@@ -5,16 +5,18 @@ RSpec.describe ModularRoutes::Route::Inner do
 
   let(:http_method) { :post }
   let(:action) { :create }
-  let(:options) { Hash[path: "something", other: "other"] }
+  let(:options) { Hash[path: "something", other: "other", on: :collection] }
 
-  let(:expected_options) { Hash[to: "#{action}#call", other: "other"] }
+  let(:expected_options) { Hash[to: "#{action}#call", other: "other", on: :collection, path: nil] }
 
   it "returns :to option" do
     expect(inner_route.args.last[:to]).to eq(expected_options[:to])
   end
 
-  it "removes :path" do
-    expect(inner_route.args.last).not_to include(:path)
+  it "overrides :path to nil" do
+    path = inner_route.args.last[:path]
+
+    expect(path).to be_nil
   end
 
   it "returns args to be executed within resource(s) block" do

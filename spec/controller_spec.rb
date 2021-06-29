@@ -30,4 +30,14 @@ RSpec.describe "Controllers", type: :request do
       expect(response.body).to eq("V1::Users::IndexController#call")
     end
   end
+
+  context "with namespace :v1 and inverted module" do
+    it "reaches action (plural resource)" do
+      post v1_users_path
+
+      expect(response.body).to eq("Users::V1::CreateController#call")
+    end
+  end
 end
+
+

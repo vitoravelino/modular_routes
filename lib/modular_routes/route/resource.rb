@@ -3,26 +3,28 @@
 module ModularRoutes
   module Route
     class Resource
-      attr_reader :scope_options
-
-      def initialize(scope_options, action)
-        @module = scope_options.module
-        @method = scope_options.method
-        @options = scope_options.options
+      def initialize(route_options, action)
+        @module = route_options.module
+        @resource = route_options.resource
+        @options = route_options.options
+        @method = route_options.method
         @action = action
       end
 
       def args
-        [@method, @module, resource_options]
+        [@method, @resource, resource_options]
       end
 
       private def resource_options
-        @options.merge({
+        immutable_options = {
           controller: @action,
           only: @action,
           action: :call,
-          module: @module,
-        })
+        }
+
+        mutable_options = { module: @module }
+
+        mutable_options.merge(@options).merge(immutable_options)
       end
     end
   end
