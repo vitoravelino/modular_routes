@@ -4,148 +4,168 @@ A simple way of having dedicated controllers for each of your route actions.
 
 If you've ever used [Hanami routes](https://guides.hanamirb.org/v1.3/routing/restful-resources/) or already use dedicated controllers for each route action, this gem might be useful.
 
+Disclaimer: There's no better/worse nor right/wrong approach, it's up to you to decide how you prefer to organize the controllers and routes of your application.
+
 ## Motivation
 
-How do you organize your controllers and routes of your Rails application?
+Let's imagine that you have to design a full RESTful resource named `articles` with some custom routes like the table below
+
+| HTTP Verb | Path                  |
+| --------- | --------------------- |
+| GET       | /articles             |
+| GET       | /articles/new         |
+| POST      | /articles             |
+| GET       | /articles/:id         |
+| GET       | /articles/:id/edit    |
+| PATCH/PUT | /articles/:id         |
+| DELETE    | /articles/:id         |
+| GET       | /articles/stats       |
+| POST      | /articles/:id/archive |
+
+How would you organize the controllers and routes of this application?
 
 The most common approach is to have all the actions (RESTful and customs) in the same controller.
 
 ```ruby
 # routes.rb
 
-resources :todos do
-  post :complete, on: :member
+resources :articles do
+  get  :stats,   on: :collection
+  post :archive, on: :member
 end
 
-# todo_controller.rb
+# articles_controller.rb
 
-class TodoController
+class ArticlesController
   def index
+    # ...
   end
 
-  #...
+  def create
+    # ...
+  end
 
-  def complete
+  # other actions...
+
+  def stats
+    # ...
+  end
+
+  def archive
+    # ...
   end
 end
 ```
+
+The reason I don't like this approach is that you can end up with a lot of code that are not related to each other in the same file. You can still have it all organized but I believe that it could be better.
 
 [DHH](http://jeromedalbert.com/how-dhh-organizes-his-rails-controllers/) prefers to keep the RESTful actions (index, new, edit, show, create, update, destroy) inside the same controller and the custom ones in dedicated controllers.
 
+One way of representing that would be
+
 ```ruby
 # routes.rb
 
-resources :todos, only: :index do
-  post :complete, on: :member, controller: 'todos/complete'
+resources :articles do
+  get  :stats,   on: :collection, controller: 'articles/stats'
+  post :archive, on: :member,     controller: 'articles/archive'
 end
 
-# todo_controller.rb
+# articles_controller.rb
 
-class TodoController
+class ArticlesController
   def index
+    # ...
   end
 
-  # ...
+  def create
+    # ...
+  end
+
+  # other actions...
 end
 
-# todo/complete_controller.rb
+# articles/archive_controller.rb
 
-class Todo::CompleteController
-  def complete
+class Articles::ArchiveController
+  def archive
   end
 end
-```
 
-What I personally prefer is one controller per route action just like it was done for the `complete` action but for all the RESTful actions. Let's see two ways of doing that
+# articles/stats_controller.rb
 
-```ruby
-# routes.rb
-
-resources :todos, module: :todos, only: [] do
-  collection do
-    get :index, to: 'index#call'
-  end
-
-  member do
-    put :complete, to: 'complete#call'
+class Articles::StatsController
+  def stats
   end
 end
 ```
 
-or
+This approach is better than the previous one because it restricts the main controller file to contain only the RESTful actions. Additional routes would require you to create a dedicated controller to handle that individually.
 
-```ruby
-# routes.rb
+Another approach (and what I personally prefer) is to have one controller per route. What it was done for `archive` and `stats` routes would also be applied to all the RESTful routes.
 
-scope module: :todos, path: '/todos' do
-  get '/',            to: 'index#call',    as: 'todos'
-  put ':id/complete', to: 'complete#call', as: 'complete_todo'
-end
+The files would be organized inside `articles/` folder that would act as a namespace
+
+```
+app/
+└── controllers/
+    └── articles/
+        ├── archive_controller.rb
+        ├── create_controller.rb
+        ├── destroy_controller.rb
+        ├── edit_controller.rb
+        ├── index_controller.rb
+        ├── new_controller.rb
+        ├── show_controller.rb
+        ├── stats_controller.rb
+        └── update_controller.rb
 ```
 
-The controllers would be organized as
+And the controllers would have one single action named `call` like
 
 ```ruby
-# todos/index_controller.rb
+# articles/index_controller.rb
 
-class Todos::IndexController
+class Articles::IndexController
   def call
   end
 end
 
-# todos/complete_controller.rb
+# articles/archive_controller.rb
 
-class Todos::CompleteController
+class Articles::ArchiveController
   def call
   end
 end
 ```
 
-To be clear, there's no better/worse nor right/wrong, it's up to you to decide how you prefer to organize the controllers and routes of your application.
-
-But from now on let's assume that you've decided to organize your application by having a dedicated controller for each route action.
-
-You are now facing the scenario of designing a full RESTful resource named `books` with some custom actions like the table below
-
-| HTTP Verb | Path                | Controller#Action   | Named Route Helper       |
-| --------- | ------------------- | ------------------- | ------------------------ |
-| GET       | /books              | books/index#call    | books_path               |
-| GET       | /books/new          | books/new#call      | new_book_path            |
-| POST      | /books              | books/create#call   | books_path               |
-| GET       | /books/:id          | books/show#call     | books_path(:id)          |
-| GET       | /books/:id/edit     | books/edit#call     | edit_books_path(:id)     |
-| PATCH/PUT | /books/:id          | books/update#call   | books_path(:id)          |
-| DELETE    | /books/:id          | books/destroy#call  | books_path(:id)          |
-| POST      | /books/request      | books/request#call  | requests_books_path(:id) |
-| POST      | /books/:id/favorite | books/favorite#call | favorite_book_path(:id)  |
-
-How could we do that with the same approach we've used in the last example?
+Here are two ways of representing what was explained above:
 
 ```ruby
-scope module: :books, path: '/books' do
-  get    '/',        to: 'index#call', as: 'books'
+scope module: :articles, path: '/articles' do
+  get    '/',        to: 'index#call', as: 'articles'
   post   '/',        to: 'create#call'
 
-  get    'new',      to: 'new#call',  as: 'new_book'
-  get    ':id/edit', to: 'edit#call', as: 'edit_book'
-  get    ':id',      to: 'show#call', as: 'book'
+  get    'new',      to: 'new#call',  as: 'new_article'
+  get    ':id/edit', to: 'edit#call', as: 'edit_article'
+  get    ':id',      to: 'show#call', as: 'article'
   patch  ':id',      to: 'update#call'
   put    ':id',      to: 'update#call'
   delete ':id',      to: 'destroy#call'
 
-  post 'request',      to: 'request#call',  as: 'requests_books'
-  post ':id/favorite', to: 'favorite#call', as: 'favorite_book'
+  post 'stats',       to: 'stats#call',   as: 'stats_articles'
+  post ':id/archive', to: 'archive#call', as: 'archive_article'
 end
 ```
 
 or
 
 ```ruby
-resources :books, module: :books, only: [] do
+resources :articles, module: :articles, only: [] do
   collection do
-    get  :index,   to: 'index#call'
-    post :create,  to: 'create#call'
-    post :request, to: 'request#call'
+    get  :index,  to: 'index#call'
+    post :create, to: 'create#call'
+    post :stats,  to: 'stats#call'
   end
 
   new do
@@ -153,19 +173,21 @@ resources :books, module: :books, only: [] do
   end
 
   member do
-    get    :edit,     to: 'edit#call'
-    get    :show,     to: 'show#call'
-    patch  :update,   to: 'update#call'
-    put    :update,   to: 'update#call'
-    delete :destroy,  to: 'destroy#call'
-    post   :favorite, to: 'favorite#call'
+    get    :edit,    to: 'edit#call'
+    get    :show,    to: 'show#call'
+    patch  :update,  to: 'update#call'
+    put    :update,  to: 'update#call'
+    delete :destroy, to: 'destroy#call'
+    post   :archive, to: 'archive#call'
   end
 end
 ```
 
-So, is that a problem with that? Well, it depends. If you already organize your routes in [separated files](https://guides.rubyonrails.org/routing.html#breaking-up-very-large-route-file-into-multiple-small-ones), you're probably fine. Otherwise your `config/routes.rb` might get really messy as your application grows.
+This is the best approach in my opinion because your controller will contain only code related to that specific route action. It will also be easier to test and maintain the code.
 
-But what if we had a simpler way of doing all of that? Let's take a look at how modular routes gem can help us achieve that.
+If you've decided to go with the last approach, unless you organizes your routes in [separated files](https://guides.rubyonrails.org/routing.html#breaking-up-very-large-route-file-into-multiple-small-ones), your `config/routes.rb` might get really messy as your application grows due to verbosity.
+
+So, what if we had a simpler way of doing all of that? Let's take a look at how modular routes can help us.
 
 ## Installation
 
@@ -185,19 +207,20 @@ Or install it yourself as:
 
 ## Usage
 
-`modular_route` uses `resource` and `resources` route helpers from Rails behind the scenes. So you can pretty much use whatever you already use for them except for a few [limitations](#limitations) that will be explained later.
+`modular_route` uses `resource` and `resources` route helpers behind the scenes. So you can pretty much use almost everything you already use with them except for a few [limitations](#limitations) that will be explained later.
 
-For the same scenario mentioned on the [motivation](#motivation) section, using modular route we have
+For the same example used in the [motivation](#motivation) section, using modular routes we now have
 
 ```ruby
 # routes.rb
-modular_route resources: :books, all: true do
+
+modular_route resources: :articles, all: true do
   collection do
-    post :request
+    post :stats
   end
 
   member do
-    post :favorite
+    post :archive
   end
 end
 ```
@@ -207,26 +230,40 @@ or to be shorter
 ```ruby
 # routes.rb
 
-modular_route resources: :books, all: true do
-  post :request, on: :collection
-  post :favorite, on: :member
+modular_route resources: :articles, all: true do
+  post :stats,   on: :collection
+  post :archive, on: :member
 end
 ```
 
 The only mandatory option to use `modular_route` helper is to pass `:resources` or `:resource` as key with the following resource name.
 
-To generate all RESTful routes, you must pass `all: true`. Otherwise nothing will happen unless you pass a block with custom routes.
+To generate all RESTful routes, you must pass `all: true`. Otherwise nothing will happen unless you pass a block with additional routes.
+
+The output routes for the code above would be
+
+| HTTP Verb | Path                  | Controller#Action     | Named Route Helper        |
+| --------- | --------------------- | --------------------- | ------------------------- |
+| GET       | /articles             | articles/index#call   | articles_path             |
+| GET       | /articles/new         | articles/new#call     | new_article_path          |
+| POST      | /articles             | articles/create#call  | articles_path             |
+| GET       | /articles/:id         | articles/show#call    | articles_path(:id)        |
+| GET       | /articles/:id/edit    | articles/edit#call    | edit_articles_path(:id)   |
+| PATCH/PUT | /articles/:id         | articles/update#call  | articles_path(:id)        |
+| DELETE    | /articles/:id         | articles/destroy#call | articles_path(:id)        |
+| POST      | /articles/stats       | articles/stats#call   | stats_articles_path(:id)  |
+| POST      | /articles/:id/archive | articles/archive#call | archive_article_path(:id) |
 
 ### Restricting routes
 
 You can restrict the routes for the RESTful with `:only` and `:except` similar to what you can do in Rails by default.
 
 ```ruby
-modular_route resources: :books, only: [:index, :show]
+modular_route resources: :articles, only: [:index, :show]
 ```
 
 ```ruby
-modular_route resources: :books, except: [:destroy]
+modular_route resources: :articles, except: [:destroy]
 ```
 
 ### Renaming paths
@@ -234,20 +271,20 @@ modular_route resources: :books, except: [:destroy]
 As in Rails you can simply use `:path` attribute.
 
 ```ruby
-modular_route resources: :books, all: true, path: 'livros'
+modular_route resources: :articles, all: true, path: 'posts'
 ```
 
 is going to produce
 
-| HTTP Verb | Path             | Controller#Action  | Named Route Helper  |
-| --------- | ---------------- | ------------------ | ------------------- |
-| GET       | /livros          | books/index#call   | books_path          |
-| GET       | /livros/new      | books/new#call     | new_book_path       |
-| POST      | /livros          | books/create#call  | books_path          |
-| GET       | /livros/:id      | books/show#call    | book_path(:id)      |
-| GET       | /livros/:id/edit | books/edit#call    | edit_book_path(:id) |
-| PATCH/PUT | /livros/:id      | books/update#call  | book_path(:id)      |
-| DELETE    | /livros/:id      | books/destroy#call | book_path(:id)      |
+| HTTP Verb | Path            | Controller#Action     | Named Route Helper     |
+| --------- | --------------- | --------------------- | ---------------------- |
+| GET       | /posts          | articles/index#call   | articles_path          |
+| GET       | /posts/new      | articles/new#call     | new_article_path       |
+| POST      | /posts          | articles/create#call  | articles_path          |
+| GET       | /posts/:id      | articles/show#call    | article_path(:id)      |
+| GET       | /posts/:id/edit | articles/edit#call    | edit_article_path(:id) |
+| PATCH/PUT | /posts/:id      | articles/update#call  | article_path(:id)      |
+| DELETE    | /posts/:id      | articles/destroy#call | article_path(:id)      |
 
 ### API mode
 
@@ -257,13 +294,13 @@ If your Rails app is with API only mode, then `:edit` and `:new` actions won't b
 
 Some of the restrictions are:
 
-- `path` and `to` options won't have any effect on member/collection routes
-- `concerns` won't work for resources
+- `concerns` won't work
+- `constraints` only as option and not block
 - no support for nesting
 
 #### Nesting
 
-Even without nesting support you can emulate what the expected behaviour would be with the mix of `namespace` and `path` as detailed below
+Even without nesting support you can emulate what the expected behaviour would be mixing `namespace` and `path` as detailed below
 
 ```ruby
 namespace :books, path: 'books/:book_id' do
@@ -273,15 +310,15 @@ end
 
 The output routes for that would be
 
-| HTTP Verb | Path                             | Controller#Action          | Named Route Helper           |
-| --------- | -------------------------------- | -------------------------- | ---------------------------- |
-| GET       | /books/:book_id/reviews          | books/reviews/index#call   | books_reviews_path           |
-| GET       | /books/:book_id/reviews/new      | books/reviews/new#call     | new_books_reviews_path       |
-| POST      | /books/:book_id/reviews          | books/reviews/create#call  | books_reviews_path           |
-| GET       | /books/:book_id/reviews/:id      | books/reviews/show#call    | books_reviews_path(:id)      |
-| GET       | /books/:book_id/reviews/:id/edit | books/reviews/edit#call    | edit_books_reviews_path(:id) |
-| PATCH/PUT | /books/:book_id/reviews/:id      | books/reviews/update#call  | books_reviews_path(:id)      |
-| DELETE    | /books/:book_id/reviews/:id      | books/reviews/destroy#call | books_reviews_path(:id)      |
+| HTTP Verb | Path                             | Controller#Action          | Named Route Helper              |
+| --------- | -------------------------------- | -------------------------- | ------------------------------- |
+| GET       | /books/:book_id/reviews          | books/reviews/index#call   | books_reviews_path              |
+| GET       | /books/:book_id/reviews/new      | books/reviews/new#call     | new_articles_reviews_path       |
+| POST      | /books/:book_id/reviews          | books/reviews/create#call  | books_reviews_path              |
+| GET       | /books/:book_id/reviews/:id      | books/reviews/show#call    | books_reviews_path(:id)         |
+| GET       | /books/:book_id/reviews/:id/edit | books/reviews/edit#call    | edit_articles_reviews_path(:id) |
+| PATCH/PUT | /books/:book_id/reviews/:id      | books/reviews/update#call  | books_reviews_path(:id)         |
+| DELETE    | /books/:book_id/reviews/:id      | books/reviews/destroy#call | books_reviews_path(:id)         |
 
 ## Development
 
@@ -295,4 +332,8 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/vitora
 
 ## Code of Conduct
 
-Everyone interacting in the ModularRoutes project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/modular_routes/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the ModularRoutes project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/vitoravelino/modular_routes/blob/master/CODE_OF_CONDUCT.md).
+
+## Licensing
+
+Modular Routes is licensed under the Apache License, Version 2.0. See [LICENSE](https://github.com/vitoravelino/modular_routes/blob/master/LICENSE) for the full license text.
