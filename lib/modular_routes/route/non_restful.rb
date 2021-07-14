@@ -13,7 +13,8 @@ module ModularRoutes
         @scope_options = scope_options
 
         unless @options.fetch(:on, nil)
-          raise ArgumentError, "Non-RESTful route should be declared inside `member`/`collection` block or using `:on` key"
+          raise ArgumentError,
+            "Non-RESTful route should be declared inside `member`/`collection` block or using `:on` key"
         end
       end
 

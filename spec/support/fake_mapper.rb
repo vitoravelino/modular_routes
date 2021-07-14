@@ -26,7 +26,7 @@ class FakeMapper
   end
 
   HTTP_METHODS.each do |method|
-    define_method(method) do |action, options = {}|
+    define_method(method) do |_action, options = {}|
       @non_restful << [method, options]
     end
   end
