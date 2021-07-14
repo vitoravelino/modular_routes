@@ -12,7 +12,7 @@ RSpec.describe ModularRoutes::Builder do
   let(:options) { Hash[all: true] }
 
   it "generates resource routes by default" do
-    expect(builder.routes.first).to be_a(ModularRoutes::Route::Resource)
+    expect(builder.routes.first).to be_a(ModularRoutes::Route::Restful)
   end
 
   it "builds resource routes by default (size)" do
@@ -23,7 +23,7 @@ RSpec.describe ModularRoutes::Builder do
     let(:options) { Hash[only: [:index, :show]] }
 
     it "builds specified resource routes" do
-      expect(builder.routes.first).to be_a(ModularRoutes::Route::Resource)
+      expect(builder.routes.first).to be_a(ModularRoutes::Route::Restful)
     end
 
     it "builds specified routes (size)" do

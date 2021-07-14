@@ -39,5 +39,3 @@ RSpec.describe "Controllers", type: :request do
     end
   end
 end
-
-

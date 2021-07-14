@@ -16,7 +16,7 @@ module ModularRoutes
         mutable_options = { on: @on }
         merged_options = mutable_options.merge(options)
 
-        @routes.unshift(Route::Inner.new(method, action, merged_options))
+        @routes.unshift(Route::NonRestful.new(method, action, merged_options, @route_options))
       end
     end
 
@@ -39,7 +39,7 @@ module ModularRoutes
     end
 
     private def build_resource_route(action)
-      Route::Resource.new(@route_options, action)
+      Route::Restful.new(@route_options, action)
     end
   end
 end

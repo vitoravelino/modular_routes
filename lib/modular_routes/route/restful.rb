@@ -2,7 +2,7 @@
 
 module ModularRoutes
   module Route
-    class Resource
+    class Restful
       def initialize(route_options, action)
         @module = route_options.module
         @resource = route_options.resource
@@ -11,8 +11,8 @@ module ModularRoutes
         @action = action
       end
 
-      def args
-        [@method, @resource, resource_options]
+      def apply(mapper)
+        mapper.public_send(@method, @resource, resource_options)
       end
 
       private def resource_options
