@@ -1,6 +1,8 @@
 # Modular Routes
 
-A simple way of having dedicated controllers for each of your route actions.
+_A simple way of having dedicated controllers for each of your route actions._
+
+![gem version](https://img.shields.io/gem/v/modular_routes) ![CI](https://github.com/vitoravelino/modular_routes/actions/workflows/main.yml/badge.svg) ![Maintainability](https://img.shields.io/codeclimate/maintainability/vitoravelino/modular_routes) ![Coverage](https://img.shields.io/codeclimate/coverage/vitoravelino/modular_routes)
 
 If you've ever used [Hanami routes](https://guides.hanamirb.org/v1.3/routing/restful-resources/) or already use dedicated controllers for each route action, this gem might be useful.
 
