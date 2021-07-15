@@ -7,7 +7,7 @@
 
 _A simple way of having dedicated controllers for each of your route actions in Rails._
 
-[![gem version](https://img.shields.io/gem/v/modular_routes)][gem]
+[![gem version](https://img.shields.io/gem/v/modular_routes?color=blue)][gem]
 [![CI](https://github.com/vitoravelino/modular_routes/actions/workflows/ci.yml/badge.svg)][ci]
 [![Coverage](https://github.com/vitoravelino/modular_routes/actions/workflows/coverage.yml/badge.svg)][coverage]
 [![Maintainability](https://img.shields.io/codeclimate/maintainability/vitoravelino/modular_routes)][codeclimate]
