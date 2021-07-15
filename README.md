@@ -5,7 +5,7 @@
 
 # Modular Routes
 
-_A simple way of having dedicated controllers for each of your route actions._
+_A simple way of having dedicated controllers for each of your route actions in Rails._
 
 [![gem version](https://img.shields.io/gem/v/modular_routes)][gem]
 [![CI](https://github.com/vitoravelino/modular_routes/actions/workflows/ci.yml/badge.svg)][ci]

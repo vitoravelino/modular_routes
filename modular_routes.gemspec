@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Vítor Avelino"]
   spec.email         = ["contact@vitoravelino.me"]
 
-  spec.summary       = "A simple way of having dedicated controllers for each of your route actions"
+  spec.summary       = "A simple way of having dedicated controllers for each of your route actions in Rails"
   spec.description   = spec.summary
   spec.homepage      = "https://github.com/vitoravelino/modular_routes"
 
