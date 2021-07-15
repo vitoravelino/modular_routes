@@ -1,0 +1,22 @@
+name: RuboCop
+
+on: [push, pull_request]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone
+        uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+          bundler-cache: true
+      - name: Install gems
+        run: |
+          gem install bundler -v 2.2.15
+          bundle install
+      - name: Run the rubocop task
+        run: |
+          bundle exec rake rubocop
