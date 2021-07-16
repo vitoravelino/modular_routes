@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module V1
-  module Users
+module Profile
+  module Photos
     class ShowController < ApplicationController
     end
   end
