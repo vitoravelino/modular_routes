@@ -2,10 +2,11 @@
 
 module ModularRoutes
   module Extension
-    def modular_route(options, &block)
-      route_options = Options.new(options.merge(api_only: api_only?))
-      route_builder = Builder.new(route_options)
-      route_builder.instance_eval(&block) if block
+    def modular_routes(**options, &block)
+      api_only = options.fetch(:api_only, api_only?)
+
+      route_builder = Builder.new(api_only: api_only)
+      route_builder.instance_eval(&block)
       route_builder.routes.each { |route| route.apply(self) }
     end
   end

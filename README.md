@@ -5,7 +5,7 @@
 
 # Modular Routes
 
-_A simple way of having dedicated controllers for each of your route actions in Rails._
+_Dedicated controllers for each of your Rails route actions._
 
 [![gem version](https://img.shields.io/gem/v/modular_routes?color=blue)][gem]
 [![CI](https://github.com/vitoravelino/modular_routes/actions/workflows/ci.yml/badge.svg)][ci]
@@ -14,7 +14,9 @@ _A simple way of having dedicated controllers for each of your route actions in 
 
 If you've ever used [Hanami routes](https://guides.hanamirb.org/v1.3/routing/restful-resources/) or already use dedicated controllers for each route action, this gem might be useful.
 
-Disclaimer: There's no better/worse nor right/wrong approach, it's up to you to decide how you prefer to organize the controllers and routes of your application.
+**Disclaimer:** There's no better/worse nor right/wrong approach, it's up to you to decide how you prefer to organize the controllers and routes of your application.
+
+Docs: [Unreleased](https://github.com/vitoravelino/modular_routes/blob/main/README.md), [v0.1.1](https://github.com/vitoravelino/modular_routes/blob/v0.1.1/README.md)
 
 ## Motivation
 
@@ -32,7 +34,7 @@ Let's imagine that you have to design a full RESTful resource named `articles` w
 | GET       | /articles/stats       |
 | POST      | /articles/:id/archive |
 
-How would you organize the controllers and routes of this application?
+**How would you organize the controllers and routes of this application?**
 
 The most common approach is to have all the actions (RESTful and customs) in the same controller.
 
@@ -195,7 +197,7 @@ end
 
 This is the best approach in my opinion because your controller will contain only code related to that specific route action. It will also be easier to test and maintain the code.
 
-If you've decided to go with the last approach, unless you organizes your routes in [separated files](https://guides.rubyonrails.org/routing.html#breaking-up-very-large-route-file-into-multiple-small-ones), your `config/routes.rb` might get really messy as your application grows due to verbosity.
+If you've decided to go with the last approach, unless you organize your routes in [separated files](https://guides.rubyonrails.org/routing.html#breaking-up-very-large-route-file-into-multiple-small-ones), your `config/routes.rb` might get really messy as your application grows due to verbosity.
 
 So, what if we had a simpler way of doing all of that? Let's take a look at how modular routes can help us.
 
@@ -217,20 +219,22 @@ Or install it yourself as:
 
 ## Usage
 
-`modular_route` uses `resource` and `resources` route helpers behind the scenes. So you can pretty much use almost everything you already use with them except for a few [limitations](#limitations) that will be explained later.
+`modular_routes` uses Rails route helpers behind the scenes. So you can pretty much use everything except for a few [limitations](#limitations) that will be detailed later.
 
-For the same example used in the [motivation](#motivation) section, using modular routes we now have
+For the same example used in the [motivation](#motivation), using modular routes we now have
 
 ```ruby
 # routes.rb
 
-modular_route resources: :articles, all: true do
-  collection do
-    post :stats
-  end
+modular_routes do
+  resources :articles do
+    collection do
+      post :stats
+    end
 
-  member do
-    post :archive
+    member do
+      post :archive
+    end
   end
 end
 ```
@@ -240,15 +244,13 @@ or to be shorter
 ```ruby
 # routes.rb
 
-modular_route resources: :articles, all: true do
-  post :stats,   on: :collection
-  post :archive, on: :member
+modular_routes do
+  resources :articles do
+    post :stats,   on: :collection
+    post :archive, on: :member
+  end
 end
 ```
-
-The only mandatory option to use `modular_route` helper is to pass `:resources` or `:resource` as key with the following resource name.
-
-To generate all RESTful routes, you must pass `all: true`. Otherwise nothing will happen unless you pass a block with additional routes.
 
 The output routes for the code above would be
 
@@ -266,22 +268,24 @@ The output routes for the code above would be
 
 ### Restricting routes
 
-You can restrict the routes for the RESTful with `:only` and `:except` similar to what you can do in Rails by default.
+You can restrict resource RESTful routes with `:only` and `:except` similar to what you can do in Rails.
 
 ```ruby
-modular_route resources: :articles, only: [:index, :show]
-```
+modular_routes do
+  resources :articles, only: [:index, :show]
 
-```ruby
-modular_route resources: :articles, except: [:destroy]
+  resources :comments, except: [:destroy]
+end
 ```
 
 ### Renaming paths
 
-As in Rails you can simply use `:path` attribute.
+As in Rails you can use `:path` to rename route paths.
 
 ```ruby
-modular_route resources: :articles, all: true, path: 'posts'
+modular_routes do
+  resources :articles, path: 'posts'
+end
 ```
 
 is going to produce
@@ -296,25 +300,15 @@ is going to produce
 | PATCH/PUT | /posts/:id      | articles/update#call  | article_path(:id)      |
 | DELETE    | /posts/:id      | articles/destroy#call | article_path(:id)      |
 
-### API mode
+### Nesting
 
-If your Rails app is with API only mode, then `:edit` and `:new` actions won't be applied.
-
-### Limitations
-
-Some of the restrictions are:
-
-- `concerns` won't work
-- `constraints` only as option and not block
-- no support for nesting
-
-#### Nesting
-
-Even without nesting support you can emulate what the expected behaviour would be mixing `namespace` and `path` as detailed below
+As of version `0.2.0`, modular routes supports nesting just like Rails.
 
 ```ruby
-namespace :books, path: 'books/:book_id' do
-  modular_route resources: :reviews, all: true
+modular_routes do
+  resources :books, only: [] do
+    resources :reviews
+  end
 end
 ```
 
@@ -329,6 +323,77 @@ The output routes for that would be
 | GET       | /books/:book_id/reviews/:id/edit | books/reviews/edit#call    | edit_articles_reviews_path(:id) |
 | PATCH/PUT | /books/:book_id/reviews/:id      | books/reviews/update#call  | books_reviews_path(:id)         |
 | DELETE    | /books/:book_id/reviews/:id      | books/reviews/destroy#call | books_reviews_path(:id)         |
+
+### Non-resourceful routes (standalone)
+
+Sometimes you want to declare a non-resourceful routes and its straightforward without modular routes:
+
+```ruby
+  get :about, to: "about/show#call"
+```
+
+Even being pretty simple, with modular routes you can omit the `#call` action like
+
+```ruby
+modular_routes do
+  get :about, to: "about#show"
+end
+```
+
+It expects `About::IndexController` to exist in `controllers/about/index_controller.rb`.
+
+If `to` doesn't match `controller#action` pattern, it falls back to Rails default behavior.
+
+### Scope
+
+`scope` falls back to Rails default behavior, so you can use it just like you would do it outside modular routes.
+
+```ruby
+modular_routes do
+  scope :v1 do
+    resources :books
+  end
+
+  scope module: :v1 do
+    resources :books
+  end
+end
+```
+
+In this example it recognizes `/v1/books` and `/books` expecting `BooksController` and `V1::BooksController` respectively.
+
+### Namespace
+
+As `scope`, `namespace` also falls back to Rails default behavior:
+
+```ruby
+modular_routes do
+  namespace :v1 do
+    resources :books
+  end
+end
+```
+
+| HTTP Verb | Path               | Controller#Action     | Named Route Helper  |
+| --------- | ------------------ | --------------------- | ------------------- |
+| GET       | /v1/books          | v1/books/index#call   | books_path          |
+| GET       | /v1/books/new      | v1/books/new#call     | new_book_path       |
+| POST      | /v1/books          | v1/books/create#call  | books_path          |
+| GET       | /v1/books/:id      | v1/books/show#call    | book_path(:id)      |
+| GET       | /v1/books/:id/edit | v1/books/edit#call    | edit_book_path(:id) |
+| PATCH/PUT | /v1/books/:id      | v1/books/update#call  | book_path(:id)      |
+| DELETE    | /v1/books/:id      | v1/books/destroy#call | book_path(:id)      |
+
+### API mode
+
+When `config.api_only` is set to `true`, `:edit` and `:new` routes won't be applied for resources.
+
+### Limitations
+
+- `constraints` are supported via `scope :constraints` and options
+- `concerns` are not supported inside `modular_routes` block but can be declared outside and used as options
+
+Let us know more limitations by creating a [new issue](https://github.com/vitoravelino/modular_routes/issues/new).
 
 ## Development
 

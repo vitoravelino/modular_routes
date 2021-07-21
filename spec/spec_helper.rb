@@ -2,7 +2,6 @@
 
 require "bundler"
 require "support/coverage"
-require "support/fake_mapper"
 
 Bundler.require :default, :development
 
