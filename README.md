@@ -16,7 +16,7 @@ If you've ever used [Hanami routes](https://guides.hanamirb.org/v1.3/routing/res
 
 **Disclaimer:** There's no better/worse nor right/wrong approach, it's up to you to decide how you prefer to organize the controllers and routes of your application.
 
-Docs: [Unreleased](https://github.com/vitoravelino/modular_routes/blob/main/README.md), [v0.1.1](https://github.com/vitoravelino/modular_routes/blob/v0.1.1/README.md)
+Docs: [Unreleased](https://github.com/vitoravelino/modular_routes/blob/main/README.md), [v0.2.0](https://github.com/vitoravelino/modular_routes/blob/v0.2.0/README.md), [v0.1.1](https://github.com/vitoravelino/modular_routes/blob/v0.1.1/README.md)
 
 ## Motivation
 
