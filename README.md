@@ -374,15 +374,15 @@ modular_routes do
 end
 ```
 
-| HTTP Verb | Path               | Controller#Action     | Named Route Helper  |
-| --------- | ------------------ | --------------------- | ------------------- |
-| GET       | /v1/books          | v1/books/index#call   | books_path          |
-| GET       | /v1/books/new      | v1/books/new#call     | new_book_path       |
-| POST      | /v1/books          | v1/books/create#call  | books_path          |
-| GET       | /v1/books/:id      | v1/books/show#call    | book_path(:id)      |
-| GET       | /v1/books/:id/edit | v1/books/edit#call    | edit_book_path(:id) |
-| PATCH/PUT | /v1/books/:id      | v1/books/update#call  | book_path(:id)      |
-| DELETE    | /v1/books/:id      | v1/books/destroy#call | book_path(:id)      |
+| HTTP Verb | Path               | Controller#Action     | Named Route Helper     |
+| --------- | ------------------ | --------------------- | ---------------------- |
+| GET       | /v1/books          | v1/books/index#call   | v1_books_path          |
+| GET       | /v1/books/new      | v1/books/new#call     | new_v1_book_path       |
+| POST      | /v1/books          | v1/books/create#call  | v1_books_path          |
+| GET       | /v1/books/:id      | v1/books/show#call    | v1_book_path(:id)      |
+| GET       | /v1/books/:id/edit | v1/books/edit#call    | edit_v1_book_path(:id) |
+| PATCH/PUT | /v1/books/:id      | v1/books/update#call  | v1_book_path(:id)      |
+| DELETE    | /v1/books/:id      | v1/books/destroy#call | v1_book_path(:id)      |
 
 ### API mode
 
