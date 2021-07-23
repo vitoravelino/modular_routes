@@ -314,15 +314,15 @@ end
 
 The output routes for that would be
 
-| HTTP Verb | Path                             | Controller#Action          | Named Route Helper              |
-| --------- | -------------------------------- | -------------------------- | ------------------------------- |
-| GET       | /books/:book_id/reviews          | books/reviews/index#call   | books_reviews_path              |
-| GET       | /books/:book_id/reviews/new      | books/reviews/new#call     | new_articles_reviews_path       |
-| POST      | /books/:book_id/reviews          | books/reviews/create#call  | books_reviews_path              |
-| GET       | /books/:book_id/reviews/:id      | books/reviews/show#call    | books_reviews_path(:id)         |
-| GET       | /books/:book_id/reviews/:id/edit | books/reviews/edit#call    | edit_articles_reviews_path(:id) |
-| PATCH/PUT | /books/:book_id/reviews/:id      | books/reviews/update#call  | books_reviews_path(:id)         |
-| DELETE    | /books/:book_id/reviews/:id      | books/reviews/destroy#call | books_reviews_path(:id)         |
+| HTTP Verb | Path                             | Controller#Action          | Named Route Helper         |
+| --------- | -------------------------------- | -------------------------- | -------------------------- |
+| GET       | /books/:book_id/reviews          | books/reviews/index#call   | book_reviews_path          |
+| GET       | /books/:book_id/reviews/new      | books/reviews/new#call     | new_book_review_path       |
+| POST      | /books/:book_id/reviews          | books/reviews/create#call  | book_reviews_path          |
+| GET       | /books/:book_id/reviews/:id      | books/reviews/show#call    | book_review_path(:id)      |
+| GET       | /books/:book_id/reviews/:id/edit | books/reviews/edit#call    | edit_book_review_path(:id) |
+| PATCH/PUT | /books/:book_id/reviews/:id      | books/reviews/update#call  | book_review_path(:id)      |
+| DELETE    | /books/:book_id/reviews/:id      | books/reviews/destroy#call | book_review_path(:id)      |
 
 ### Non-resourceful routes (standalone)
 
