@@ -71,7 +71,7 @@ end
 
 The reason I don't like this approach is that you can end up with a lot of code that are not related to each other in the same file. You can still have it all organized but I believe that it could be better.
 
-[DHH](http://jeromedalbert.com/how-dhh-organizes-his-rails-controllers/) prefers to keep the RESTful actions (index, new, edit, show, create, update, destroy) inside the same controller and the custom ones in dedicated controllers.
+[DHH](http://jeromedalbert.com/how-dhh-organizes-his-rails-controllers/) prefers to keep the RESTful actions (index, new, edit, show, create, update, destroy) inside the same controller and the custom ones in dedicated controllers but represented as RESTful actions.
 
 One way of representing that would be
 
@@ -79,8 +79,8 @@ One way of representing that would be
 # routes.rb
 
 resources :articles do
-  get  :stats,   on: :collection, controller: 'articles/stats'
-  post :archive, on: :member,     controller: 'articles/archive'
+  get  :stats,   on: :collection, to: 'articles/stats#show'
+  post :archive, on: :member,     to: 'articles/archive#create'
 end
 
 # articles_controller.rb
@@ -100,14 +100,14 @@ end
 # articles/archive_controller.rb
 
 class Articles::ArchiveController
-  def archive
+  def create
   end
 end
 
 # articles/stats_controller.rb
 
 class Articles::StatsController
-  def stats
+  def show
   end
 end
 ```
@@ -263,7 +263,7 @@ The output routes for the code above would be
 | GET       | /articles/:id/edit    | articles/edit#call    | edit_articles_path(:id)   |
 | PATCH/PUT | /articles/:id         | articles/update#call  | articles_path(:id)        |
 | DELETE    | /articles/:id         | articles/destroy#call | articles_path(:id)        |
-| POST      | /articles/stats       | articles/stats#call   | stats_articles_path(:id)  |
+| POST      | /articles/stats       | articles/stats#call   | stats_articles_path       |
 | POST      | /articles/:id/archive | articles/archive#call | archive_article_path(:id) |
 
 ### Restricting routes
