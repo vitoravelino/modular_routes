@@ -25,6 +25,10 @@ module ModularRoutes
       end
     end
 
+    def root(*, **)
+      raise SyntaxError, "You must call `root` outside of `modular_routes` block"
+    end
+
     def concerns(names)
       raise SyntaxError, "You must call `concerns` inside of a resource block" unless current_scope
 

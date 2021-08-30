@@ -8,4 +8,11 @@ RSpec.describe ModularRoutes::Builder do
       expect { builder.concerns(:whatever) }.to raise_error(SyntaxError)
     end
   end
+
+  describe "#root" do
+    it "raises SyntaxError" do
+      expect { builder.root("controller#method") }.to raise_error(SyntaxError)
+      expect { builder.root(to: "controller#method") }.to raise_error(SyntaxError)
+    end
+  end
 end
