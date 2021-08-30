@@ -10,6 +10,24 @@ Rails.application.routes.draw do
       resources :papers, only: :show
     end
 
+    # concerns
+    concern :activatable do
+      member do
+        put :deactivate
+        put :activate
+      end
+    end
+
+    concern :commentable do
+      resources :comments, only: :create
+    end
+
+    resources :books, only: [], concerns: :commentable
+
+    resources :articles, concerns: [:activatable] do
+      concerns :commentable
+    end
+
     # plural
     resources :users do
       # collection inline

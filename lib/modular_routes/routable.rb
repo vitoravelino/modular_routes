@@ -7,6 +7,7 @@ module ModularRoutes
       when :standalone then Standalone.new(*args)
       when :non_restful then NonRestful.new(*args)
       when :restful then Restful.new(*args)
+      when :concerns then Concerns.new(*args)
       else raise NotImplementedError
       end
     end

@@ -13,6 +13,7 @@ module ModularRoutes
         @api_only = options.delete(:api_only)
         @only = options.delete(:only) { default_actions }
         @except = options.delete(:except)
+        @concerns = Array(options.delete(:concerns))
         @options = { module: name, only: [] }.merge(options)
       end
 
@@ -31,6 +32,8 @@ module ModularRoutes
       def apply(mapper)
         mapper.public_send(resource_type, @name, @options) do
           @children.each { |route_or_scope| route_or_scope.apply(mapper) }
+
+          apply_concerns(mapper)
         end
 
         apply_restful_actions(mapper)
@@ -53,6 +56,12 @@ module ModularRoutes
       private def apply_restful_actions(mapper)
         actions.each do |action|
           Routable.for(:restful, action, self).apply(mapper)
+        end
+      end
+
+      private def apply_concerns(mapper)
+        @concerns.each do |concern|
+          Routable.for(:concerns, concern).apply(mapper)
         end
       end
     end

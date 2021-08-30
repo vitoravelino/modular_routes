@@ -8,6 +8,7 @@ module ModularRoutes
       when :resources then Resource.new(*args)
       when :resource then SingleResource.new(*args)
       when :scope then Scope.new(*args)
+      when :concern then Concern.new(*args)
       else raise NotImplementedError
       end
     end

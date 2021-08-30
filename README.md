@@ -384,6 +384,51 @@ end
 | PATCH/PUT | /v1/books/:id      | v1/books/update#call  | v1_book_path(:id)      |
 | DELETE    | /v1/books/:id      | v1/books/destroy#call | v1_book_path(:id)      |
 
+### Routing concerns
+
+When you want to reuse route declarations that are usually associated with a common behavior, you can use concerns declaring blocks like:
+
+```ruby
+concern :commentable do
+  resource :comments
+end
+
+concern :activatable do
+  member do
+    put :activate
+    put :deactivate
+  end
+end
+```
+
+To use it you can pass it through resource(s) options or calling `concerns` helper inside of a resource(s) block:
+
+```ruby
+resources :articles, concerns: :commentable
+
+resources :articles, concerns: [:activatable]
+
+# or
+
+resources :articles do
+  concerns :commentable
+end
+```
+
+The output of that would be:
+
+| HTTP Verb | Path                                    | Controller#Action              | Named Route Helper                          |
+| --------- | --------------------------------------- | ------------------------------ | ------------------------------------------- |
+| GET       | /articles/:id/activate                  | articles/activate#call         | activate_article_path                       |
+| GET       | /articles/:id/deactivate                | articles/deactivate#call       | deactivate_article_path                     |
+| GET       | /articles/:article_id/comments          | articles/comments/index#call   | article_comments_path(:article_id)          |
+| GET       | /articles/:article_id/comments/new      | articles/comments/new#call     | new_article_comment_path (:article_id)      |
+| POST      | /articles/:article_id/comments          | articles/comments/create#call  | article_comments_path(:article_id)          |
+| GET       | /articles/:article_id/comments/:id      | articles/comments/show#call    | article_comment_path(:article_id, :id)      |
+| GET       | /articles/:article_id/comments/:id/edit | articles/comments/edit#call    | edit_article_comment_path(:article_id, :id) |
+| PATCH/PUT | /articles/:article_id/comments/:id      | articles/comments/update#call  | article_comment_path(:article_id, :id)      |
+| DELETE    | /articles/:article_id/comments/:id      | articles/comments/destroy#call | article_comment_path(:article_id, :id)      |
+
 ### API mode
 
 When `config.api_only` is set to `true`, `:edit` and `:new` routes won't be applied for resources.

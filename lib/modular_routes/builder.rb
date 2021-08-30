@@ -25,6 +25,15 @@ module ModularRoutes
       end
     end
 
+    def concerns(names)
+      raise SyntaxError, "You must call `concerns` inside of a resource block" unless current_scope
+
+      Array(names).each do |name|
+        concern = Routable.for(:concerns, name)
+        current_scope.add(concern)
+      end
+    end
+
     def collection(&block)
       apply_inner_scope(:collection, &block)
     end
@@ -39,6 +48,10 @@ module ModularRoutes
 
     def namespace(namespace_name, **options, &block)
       apply_scopable(:namespace, namespace_name, options, &block)
+    end
+
+    def concern(concern_name, **options, &block)
+      apply_scopable(:concern, concern_name, options, &block)
     end
 
     def scope(*args, **options, &block)
@@ -80,7 +93,7 @@ module ModularRoutes
       block&.call
 
       @scopes.pop
-      @routes.unshift(scopable) unless current_scope
+      @routes.push(scopable) unless current_scope
     end
 
     private def apply_inner_scope(type)
