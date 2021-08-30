@@ -153,4 +153,23 @@ RSpec.describe "Route Mapping", type: :routing do
       expect(get: "/book/new").not_to route_to("book/new#call")
     end
   end
+
+  context "with concerns" do
+    it "maps resources (command)" do
+      expect(post: "/articles/1/comments").to route_to(
+        controller: "articles/comments/create",
+        action: "call",
+        article_id: "1"
+      )
+    end
+
+    it "maps resources (options)" do
+      expect(post: "/books/1/comments").to route_to(controller: "books/comments/create", action: "call", book_id: "1")
+    end
+
+    it "maps member actions" do
+      expect(put: "/articles/1/deactivate").to route_to(controller: "articles/deactivate", action: "call", id: "1")
+      expect(put: "/articles/1/activate").to route_to(controller: "articles/activate", action: "call", id: "1")
+    end
+  end
 end
