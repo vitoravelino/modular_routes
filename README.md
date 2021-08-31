@@ -410,7 +410,7 @@ resources :articles, concerns: [:activatable]
 
 # or
 
-resources :articles do
+resources :articles, concerns: :activatable do
   concerns :commentable
 end
 ```
