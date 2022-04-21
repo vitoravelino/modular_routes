@@ -6,7 +6,8 @@ module ModularRoutes
       def initialize(http_method, action, options)
         @http_method = http_method
         @action = action
-        @options = options
+        @options = options.except(:controller_method)
+        @controller_method = options.fetch(:controller_method)
       end
 
       def apply(mapper)
@@ -15,7 +16,7 @@ module ModularRoutes
 
       private def options
         mutable_options = {
-          to: "#{@action}#call",
+          to: "#{@action}##{@controller_method}",
         }
 
         mutable_options.merge(@options)
