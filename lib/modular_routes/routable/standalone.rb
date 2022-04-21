@@ -6,7 +6,8 @@ module ModularRoutes
       def initialize(http_method, action, options)
         @http_method = http_method
         @action = action
-        @options = options
+        @options = options.except(:controller_method)
+        @controller_method = options.fetch(:controller_method)
       end
 
       def apply(mapper)
@@ -18,7 +19,7 @@ module ModularRoutes
 
         if namespace_controller_pattern?(to)
           namespace, controller = to.split("#")
-          @options[:to] = "#{namespace}/#{controller}#call"
+          @options[:to] = "#{namespace}/#{controller}##{@controller_method}"
         end
 
         @options
