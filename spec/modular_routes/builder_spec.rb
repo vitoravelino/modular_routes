@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe ModularRoutes::Builder do
-  subject(:builder) { described_class.new(api_only: false) }
+  subject(:builder) { described_class.new(api_only: false, controller_method: "call") }
 
   describe "#concerns" do
     it "raises SyntaxError" do
