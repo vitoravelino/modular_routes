@@ -30,7 +30,7 @@ module ModularRoutes
       end
 
       def apply(mapper)
-        mapper.public_send(resource_type, @name, @options) do
+        mapper.public_send(resource_type, @name, @options.except(:controller_method)) do
           @children.each { |route_or_scope| route_or_scope.apply(mapper) }
 
           apply_concerns(mapper)
