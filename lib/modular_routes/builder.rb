@@ -6,8 +6,9 @@ module ModularRoutes
 
     attr_reader :routes
 
-    def initialize(api_only:)
+    def initialize(api_only:, controller_method:)
       @api_only = api_only
+      @controller_method = controller_method
       @scopes = []
       @routes = []
     end
@@ -77,11 +78,11 @@ module ModularRoutes
         :standalone
       end
 
-      Routable.for(routable, method, action, options)
+      Routable.for(routable, method, action, options.merge(controller_method: @controller_method))
     end
 
     private def build_scopable(type, name, options)
-      Scopable.for(type, name, options.merge(api_only: @api_only))
+      Scopable.for(type, name, options.merge(api_only: @api_only, controller_method: @controller_method))
     end
 
     private def apply_scopable(type, name, options, &block)

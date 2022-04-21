@@ -5,7 +5,7 @@ module ModularRoutes
     class Namespace
       def initialize(name, options)
         @name = name
-        @options = options.except(:api_only)
+        @options = options.except(:api_only, :controller_method)
 
         @children = []
       end

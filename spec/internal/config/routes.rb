@@ -130,4 +130,9 @@ Rails.application.routes.draw do
 
     resource :book
   end
+
+  # controller method
+  modular_routes controller_method: :execute do
+    resources :recipes
+  end
 end

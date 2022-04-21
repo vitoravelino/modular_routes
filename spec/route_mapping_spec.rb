@@ -172,4 +172,14 @@ RSpec.describe "Route Mapping", type: :routing do
       expect(put: "/articles/1/activate").to route_to(controller: "articles/activate", action: "call", id: "1")
     end
   end
+
+  context "with controller_method" do
+    it "maps_resources with controller_method execute" do
+      expect(get: "/recipes").to route_to(controller: "recipes/index", action: "execute")
+      expect(post: "/recipes").to route_to(controller: "recipes/create", action: "execute")
+      expect(put: "/recipes/1").to route_to(controller: "recipes/update", action: "execute", id: "1")
+      expect(get: "/recipes/1").to route_to(controller: "recipes/show", action: "execute", id: "1")
+      expect(delete: "/recipes/1").to route_to(controller: "recipes/destroy", action: "execute", id: "1")
+    end
+  end
 end

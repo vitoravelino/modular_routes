@@ -5,7 +5,7 @@ module ModularRoutes
     class Scope
       def initialize(args, options)
         @args = args
-        @options = options.except(:api_only)
+        @options = options.except(:api_only, :controller_method)
 
         @children = []
       end

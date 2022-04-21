@@ -6,6 +6,7 @@ module ModularRoutes
       def initialize(action, resource)
         @action = action
         @resource = resource
+        @controller_method = resource.options.fetch(:controller_method)
       end
 
       def apply(mapper)
@@ -21,14 +22,14 @@ module ModularRoutes
       end
 
       private def resource_options
-        @resource.options
+        @resource.options.except(:controller_method)
       end
 
       private def options
         immutable = {
           controller: @action,
           only: @action,
-          action: :call,
+          action: @controller_method,
         }
 
         resource_options.merge(immutable)
